@@ -1,0 +1,109 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE, SOCIALS } from '../consts';
+---
+
+<BaseLayout title="Contact" description="How to get in touch with Sudin.">
+	<div class="container narrow">
+		<p class="eyebrow">Contact</p>
+		<h1 class="page-title">Say hello</h1>
+		<p class="page-lede">
+			Questions about a post, a collaboration idea, or just want to talk training or tech? I read everything.
+		</p>
+
+		<a class="email" href={`mailto:${SITE.email}`} id="contact-email">
+			<span>Email</span>
+			<strong>{SITE.email}</strong>
+			<span class="arrow" aria-hidden="true">→</span>
+		</a>
+
+		<ul class="socials">
+			{
+				SOCIALS.map((s) => (
+					<li>
+						<a href={s.href} target="_blank" rel="me noopener" id={`contact-${s.label.toLowerCase().replace(/[^a-z]/g, '')}`}>
+							<span class="label">{s.label}</span>
+							<span class="handle">{s.handle}</span>
+							<span class="arrow" aria-hidden="true">↗</span>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</div>
+</BaseLayout>
+
+<style>
+	.email {
+		display: grid;
+		grid-template-columns: 1fr auto;
+		align-items: end;
+		gap: 0.25rem 1rem;
+		max-width: var(--measure);
+		margin-top: 2.5rem;
+		padding: 1.5rem 1.6rem;
+		background: var(--text);
+		color: var(--bg);
+		border-radius: var(--radius);
+		box-shadow: var(--shadow);
+		text-decoration: none;
+		transition: transform 0.3s var(--ease), background-color 0.2s;
+	}
+	.email:hover {
+		color: var(--bg);
+		background: var(--accent);
+		transform: translateY(-2px);
+	}
+	.email span:first-child {
+		grid-column: 1 / -1;
+		font-size: 0.75rem;
+		letter-spacing: 0.12em;
+		text-transform: uppercase;
+		opacity: 0.7;
+	}
+	.email strong {
+		font-family: var(--font-serif);
+		font-weight: 500;
+		font-size: clamp(1.3rem, 4vw, 1.9rem);
+		letter-spacing: -0.01em;
+		word-break: break-all;
+	}
+	.email .arrow {
+		font-size: 1.4rem;
+	}
+	.socials {
+		max-width: var(--measure);
+		list-style: none;
+		margin: 2rem 0 0;
+		padding: 0;
+	}
+	.socials li + li {
+		border-top: 1px solid var(--border);
+	}
+	.socials a {
+		display: grid;
+		grid-template-columns: 9rem 1fr auto;
+		align-items: center;
+		gap: 1rem;
+		padding: 1.05rem 0;
+		text-decoration: none;
+	}
+	.label {
+		font-weight: 500;
+	}
+	.handle {
+		color: var(--muted);
+		font-size: 0.9rem;
+	}
+	.socials a:hover .handle {
+		color: inherit;
+	}
+	@media (max-width: 480px) {
+		.socials a {
+			grid-template-columns: 1fr auto;
+		}
+		.handle {
+			display: none;
+		}
+	}
+</style>

@@ -1,0 +1,70 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../consts';
+---
+
+<BaseLayout title="About" description="Who I am, what I write about, and why this site exists.">
+	<div class="container narrow">
+		<p class="eyebrow">About</p>
+		<h1 class="page-title">Hi, I'm Sudin.</h1>
+		<p class="page-lede">
+			{/* TODO: rewrite this in your own words */}
+			I train, I build things with code, and I like thinking out loud. This site is where those three meet.
+		</p>
+
+		<div class="prose body">
+			<!-- ✏️ Everything below is starter copy. Replace it with your own story. -->
+			<p>
+				I started this site because I kept explaining the same things to friends: how I structure my training,
+				which tools actually make me more productive, and what I've learned from the books and people around
+				me. Writing it down once, properly, felt better than repeating it.
+			</p>
+
+			<h2>What you'll find here</h2>
+			<ul>
+				<li><strong><a href="/category/fitness/">Fitness</a></strong> — training logs, programming, nutrition, and the mindset side of staying consistent.</li>
+				<li><strong><a href="/category/tech/">Tech</a></strong> — software I'm building, tools I use every day, and notes from learning new things.</li>
+				<li><strong><a href="/category/life/">Life &amp; more</a></strong> — books, ideas, travel, and anything else worth talking about.</li>
+			</ul>
+
+			<h2>Right now</h2>
+			<p>
+				I'm currently focused on getting stronger, shipping side projects, and writing here regularly.
+				If you want to say hello, the <a href="/contact/">contact page</a> has the best ways to reach me.
+			</p>
+		</div>
+
+		<aside class="card">
+			<p>Prefer email?</p>
+			<a href={`mailto:${SITE.email}`} id="about-email">{SITE.email} <span class="arrow">→</span></a>
+		</aside>
+	</div>
+</BaseLayout>
+
+<style>
+	.body {
+		margin-top: 2.5rem;
+	}
+	.card {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: center;
+		gap: 0.5rem 1.5rem;
+		max-width: var(--measure);
+		margin-top: 3rem;
+		padding: 1.25rem 1.5rem;
+		background: var(--surface);
+		border-radius: var(--radius);
+		box-shadow: var(--shadow);
+	}
+	.card p {
+		margin: 0;
+		color: var(--muted);
+		font-size: 0.9rem;
+	}
+	.card a {
+		font-weight: 500;
+		text-decoration: none;
+	}
+</style>

@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostList from '../../components/PostList.astro';
+import CategoryFilter from '../../components/CategoryFilter.astro';
+import { CATEGORIES, CATEGORY_KEYS, type CategoryKey } from '../../consts';
+import { getPosts } from '../../lib/posts';
+
+export function getStaticPaths() {
+	return CATEGORY_KEYS.map((category) => ({ params: { category } }));
+}
+
+const category = Astro.params.category as CategoryKey;
+const all = await getPosts();
+const posts = all.filter((p) => p.data.category === category);
+const counts = Object.fromEntries(CATEGORY_KEYS.map((k) => [k, all.filter((p) => p.data.category === k).length]));
+const info = CATEGORIES[category];
+---
+
+<BaseLayout title={info.label} description={info.description}>
+	<div class="container narrow">
+		<p class="eyebrow"><span class="cat" data-cat={category}>Topic</span></p>
+		<h1 class="page-title">{info.label}</h1>
+		<p class="page-lede">{info.description}</p>
+		<CategoryFilter counts={counts} active={category} />
+		{
+			posts.length > 0 ? (
+				<PostList posts={posts} showCategory={false} />
+			) : (
+				<p class="empty">Nothing here yet — the first post is on its way.</p>
+			)
+		}
+	</div>
+</BaseLayout>
+
+<style>
+	.empty {
+		padding: 3rem 0;
+		color: var(--muted);
+		font-family: var(--font-serif);
+		font-style: italic;
+		font-size: 1.15rem;
+	}
+</style>

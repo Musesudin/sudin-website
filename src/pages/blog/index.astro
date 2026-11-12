@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostList from '../../components/PostList.astro';
+import CategoryFilter from '../../components/CategoryFilter.astro';
+import { CATEGORY_KEYS } from '../../consts';
+import { getPosts } from '../../lib/posts';
+
+const posts = await getPosts();
+const counts = Object.fromEntries(CATEGORY_KEYS.map((k) => [k, posts.filter((p) => p.data.category === k).length]));
+---
+
+<BaseLayout title="Writing" description="Everything I've written about fitness, tech, and life.">
+	<div class="container narrow">
+		<p class="eyebrow">Writing</p>
+		<h1 class="page-title">All posts</h1>
+		<p class="page-lede">Everything I've written, newest first. Pick a topic to narrow it down.</p>
+		<CategoryFilter counts={counts} active="all" />
+		<PostList posts={posts} />
+	</div>
+</BaseLayout>

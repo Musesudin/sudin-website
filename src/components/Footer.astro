@@ -1,0 +1,46 @@
+---
+import { SITE, SOCIALS } from '../consts';
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+	<div class="container inner">
+		<p>© {year} {SITE.author} · <a href="/">sudin.com.np</a></p>
+		<ul>
+			{SOCIALS.slice(0, 3).map((s) => (
+				<li><a href={s.href} rel="me noopener" target="_blank">{s.label}</a></li>
+			))}
+			<li><a href="/rss.xml" id="footer-rss">RSS</a></li>
+		</ul>
+	</div>
+</footer>
+
+<style>
+	.site-footer {
+		border-top: 1px solid var(--border);
+		font-size: 0.85rem;
+		color: var(--muted);
+	}
+	.inner {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		align-items: center;
+		gap: 0.75rem 2rem;
+		padding-block: 2rem;
+	}
+	p {
+		margin: 0;
+	}
+	ul {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1.25rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	a {
+		text-decoration: none;
+	}
+</style>

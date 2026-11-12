@@ -1,0 +1,166 @@
+---
+import { render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { CATEGORIES, SITE } from '../../consts';
+import { formatDate, getPosts, readingTime } from '../../lib/posts';
+
+export async function getStaticPaths() {
+	const posts = await getPosts();
+	return posts.map((post, i) => ({
+		params: { slug: post.id },
+		props: { post, newer: posts[i - 1], older: posts[i + 1] },
+	}));
+}
+
+const { post, newer, older } = Astro.props;
+const { Content } = await render(post);
+const { title, description, pubDate, updatedDate, category, tags } = post.data;
+---
+
+<BaseLayout title={title} description={description} type="article" publishedTime={pubDate}>
+	<article class="container narrow">
+		<header class="post-head">
+			<div class="meta rise">
+				<a href={`/category/${category}/`} class="cat" data-cat={category}>{CATEGORIES[category].label}</a>
+				<span aria-hidden="true">·</span>
+				<time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+				<span aria-hidden="true">·</span>
+				<span>{readingTime(post.body)} min read</span>
+			</div>
+			<h1 class="rise rise-2">{title}</h1>
+			<p class="page-lede rise rise-3">{description}</p>
+			{updatedDate && <p class="updated">Updated {formatDate(updatedDate)}</p>}
+		</header>
+
+		<div class="prose rise rise-3">
+			<Content />
+		</div>
+
+		<footer class="post-foot">
+			{
+				tags.length > 0 && (
+					<ul class="tags" aria-label="Tags">
+						{tags.map((t) => <li>#{t}</li>)}
+					</ul>
+				)
+			}
+			<p class="thanks">
+				Thanks for reading. If this was useful, share it with a friend or
+				<a href="/contact/">tell me what you think</a>. You can also follow along via <a href="/rss.xml">RSS</a>.
+			</p>
+			<nav class="pager" aria-label="More posts">
+				{
+					older ? (
+						<a href={`/blog/${older.id}/`} id="pager-older" class="older">
+							<span>← Older</span>
+							<strong>{older.data.title}</strong>
+						</a>
+					) : <span />
+				}
+				{
+					newer && (
+						<a href={`/blog/${newer.id}/`} id="pager-newer" class="newer">
+							<span>Newer →</span>
+							<strong>{newer.data.title}</strong>
+						</a>
+					)
+				}
+			</nav>
+		</footer>
+	</article>
+</BaseLayout>
+
+<style>
+	.post-head {
+		margin-bottom: clamp(2rem, 5vw, 3rem);
+	}
+	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.6rem;
+		margin-bottom: 1.25rem;
+		font-size: 0.85rem;
+		color: var(--muted);
+	}
+	h1 {
+		font-size: clamp(2.25rem, 5.5vw, 3.4rem);
+		letter-spacing: -0.028em;
+		line-height: 1.08;
+	}
+	.updated {
+		margin: 1rem 0 0;
+		font-size: 0.8rem;
+		color: var(--muted);
+	}
+	.post-foot {
+		max-width: var(--measure);
+		margin-top: 3.5rem;
+		padding-top: 2rem;
+		border-top: 1px solid var(--border);
+	}
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		list-style: none;
+		margin: 0 0 1.5rem;
+		padding: 0;
+		font-size: 0.8rem;
+		color: var(--muted);
+	}
+	.tags li {
+		padding: 0.2rem 0.6rem;
+		background: var(--surface);
+		border-radius: 6px;
+	}
+	.thanks {
+		margin: 0;
+		font-family: var(--font-serif);
+		font-size: 1.1rem;
+		color: var(--text-soft);
+	}
+	.pager {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+		margin-top: 2.5rem;
+	}
+	.pager a {
+		display: flex;
+		flex-direction: column;
+		gap: 0.3rem;
+		padding: 1rem 1.1rem;
+		border: 1px solid var(--border);
+		border-radius: var(--radius);
+		text-decoration: none;
+		transition: background-color 0.2s, transform 0.3s var(--ease);
+	}
+	.pager a:hover {
+		background: var(--surface);
+		transform: translateY(-2px);
+	}
+	.pager span {
+		font-size: 0.75rem;
+		color: var(--muted);
+		text-transform: uppercase;
+		letter-spacing: 0.1em;
+	}
+	.pager strong {
+		font-family: var(--font-serif);
+		font-weight: 500;
+		font-size: 1.05rem;
+	}
+	.newer {
+		text-align: right;
+		grid-column: 2;
+	}
+	@media (max-width: 560px) {
+		.pager {
+			grid-template-columns: 1fr;
+		}
+		.newer {
+			grid-column: auto;
+		}
+	}
+</style>

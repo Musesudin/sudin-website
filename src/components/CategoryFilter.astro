@@ -1,0 +1,64 @@
+---
+import { CATEGORIES, CATEGORY_KEYS, type CategoryKey } from '../consts';
+
+interface Props {
+	active?: CategoryKey | 'all';
+	counts: Record<string, number>;
+}
+const { active = 'all', counts } = Astro.props;
+const total = Object.values(counts).reduce((a, b) => a + b, 0);
+---
+
+<nav class="filter" aria-label="Filter by category">
+	<a href="/blog/" id="filter-all" aria-current={active === 'all' ? 'page' : undefined}>
+		All <span>{total}</span>
+	</a>
+	{
+		CATEGORY_KEYS.map((key) => (
+			<a
+				href={`/category/${key}/`}
+				id={`filter-${key}`}
+				class="cat"
+				data-cat={key}
+				aria-current={active === key ? 'page' : undefined}
+			>
+				{CATEGORIES[key].label} <span>{counts[key] ?? 0}</span>
+			</a>
+		))
+	}
+</nav>
+
+<style>
+	.filter {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin: 2rem 0 1.5rem;
+	}
+	a {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.45rem;
+		padding: 0.4rem 0.85rem;
+		border: 1px solid var(--border);
+		border-radius: 999px;
+		font-size: 0.85rem;
+		font-weight: 500;
+		color: var(--muted);
+		text-decoration: none;
+		transition: all 0.2s var(--ease);
+	}
+	a:hover {
+		color: var(--text);
+		background: var(--surface);
+	}
+	a[aria-current='page'] {
+		background: var(--text);
+		border-color: var(--text);
+		color: var(--bg);
+	}
+	span {
+		font-variant-numeric: tabular-nums;
+		opacity: 0.6;
+	}
+</style>

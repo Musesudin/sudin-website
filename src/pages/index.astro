@@ -1,0 +1,202 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostList from '../components/PostList.astro';
+import { CATEGORIES, CATEGORY_KEYS } from '../consts';
+import { getPosts } from '../lib/posts';
+import { getCollection } from 'astro:content';
+
+const posts = await getPosts();
+const latest = posts.slice(0, 5);
+const counts = Object.fromEntries(CATEGORY_KEYS.map((k) => [k, posts.filter((p) => p.data.category === k).length]));
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order).slice(0, 2);
+---
+
+<BaseLayout>
+	<section class="container narrow hero">
+		<p class="eyebrow rise">Hi, I'm Sudin 👋</p>
+		<h1 class="rise rise-2">
+			I write about <a href="/category/fitness/" class="topic" data-cat="fitness">getting stronger</a>,
+			<a href="/category/tech/" class="topic" data-cat="tech">building with technology</a>, and
+			<a href="/category/life/" class="topic" data-cat="life">whatever else</a> is on my mind.
+		</h1>
+		<p class="page-lede rise rise-3">
+			This is my corner of the internet: honest notes, lessons learned the hard way, and things worth sharing.
+			<a href="/about/" id="hero-about">More about me <span class="arrow">→</span></a>
+		</p>
+	</section>
+
+	<section class="container narrow block">
+		<div class="section-head">
+			<h2>Latest writing</h2>
+			<a href="/blog/" id="home-all-posts">All posts <span class="arrow">→</span></a>
+		</div>
+		<PostList posts={latest} />
+	</section>
+
+	<section class="container narrow block">
+		<div class="section-head">
+			<h2>Explore by topic</h2>
+		</div>
+		<ul class="topics">
+			{
+				CATEGORY_KEYS.map((key) => (
+					<li>
+						<a href={`/category/${key}/`} id={`topic-${key}`} data-cat={key}>
+							<span class="cat" data-cat={key}>{counts[key]} {counts[key] === 1 ? 'post' : 'posts'}</span>
+							<strong>{CATEGORIES[key].label}</strong>
+							<p>{CATEGORIES[key].description}</p>
+						</a>
+					</li>
+				))
+			}
+		</ul>
+	</section>
+
+	{
+		projects.length > 0 && (
+			<section class="container narrow block">
+				<div class="section-head">
+					<h2>Things I'm building</h2>
+					<a href="/projects/" id="home-all-projects">All projects <span class="arrow">→</span></a>
+				</div>
+				<ul class="mini-projects">
+					{projects.map((p) => (
+						<li>
+							<a href="/projects/">
+								<strong>{p.data.title}</strong>
+								<span>{p.data.description}</span>
+							</a>
+						</li>
+					))}
+				</ul>
+			</section>
+		)
+	}
+</BaseLayout>
+
+<style>
+	.hero {
+		padding-bottom: clamp(2.5rem, 6vw, 4rem);
+	}
+	h1 {
+		font-size: clamp(2rem, 4.6vw, 3rem);
+		line-height: 1.18;
+		letter-spacing: -0.022em;
+		color: var(--text);
+	}
+	.topic {
+		text-decoration: underline;
+		text-decoration-thickness: 2px;
+		text-underline-offset: 0.14em;
+		text-decoration-color: color-mix(in hsl, var(--c) 45%, transparent);
+		font-style: italic;
+		transition: color 0.2s, text-decoration-color 0.2s;
+	}
+	.topic:hover {
+		color: var(--c);
+		text-decoration-color: var(--c);
+	}
+	[data-cat='fitness'] {
+		--c: var(--cat-fitness);
+	}
+	[data-cat='tech'] {
+		--c: var(--cat-tech);
+	}
+	[data-cat='life'] {
+		--c: var(--cat-life);
+	}
+	.page-lede a {
+		color: var(--text);
+		white-space: nowrap;
+	}
+	.block {
+		margin-top: clamp(2.5rem, 6vw, 4rem);
+	}
+	.topics {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0.9rem;
+		list-style: none;
+		margin: 1.25rem 0 0;
+		padding: 0;
+	}
+	.topics a {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		height: 100%;
+		padding: 1.25rem;
+		background: var(--surface);
+		border-radius: var(--radius);
+		box-shadow: var(--shadow);
+		text-decoration: none;
+		overflow: hidden;
+		transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+	}
+	.topics a::after {
+		content: '';
+		position: absolute;
+		inset: auto 0 0 0;
+		height: 3px;
+		background: var(--c);
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.4s var(--ease);
+	}
+	.topics a:hover {
+		transform: translateY(-3px);
+		color: inherit;
+	}
+	.topics a:hover::after {
+		transform: scaleX(1);
+	}
+	.topics strong {
+		font-family: var(--font-serif);
+		font-size: 1.35rem;
+		font-weight: 500;
+		color: var(--text);
+	}
+	.topics p {
+		margin: 0;
+		font-size: 0.875rem;
+		color: var(--muted);
+		line-height: 1.5;
+	}
+	.mini-projects {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.mini-projects li + li {
+		border-top: 1px solid var(--border);
+	}
+	.mini-projects a {
+		display: flex;
+		justify-content: space-between;
+		gap: 1.5rem;
+		padding: 1.1rem 0;
+		text-decoration: none;
+	}
+	.mini-projects strong {
+		font-weight: 500;
+		white-space: nowrap;
+	}
+	.mini-projects span {
+		color: var(--muted);
+		font-size: 0.9rem;
+		text-align: right;
+	}
+	@media (max-width: 720px) {
+		.topics {
+			grid-template-columns: 1fr;
+		}
+		.mini-projects a {
+			flex-direction: column;
+			gap: 0.2rem;
+		}
+		.mini-projects span {
+			text-align: left;
+		}
+	}
+</style>

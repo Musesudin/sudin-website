@@ -1,0 +1,177 @@
+---
+import { SITE } from '../consts';
+
+const nav = [
+	{ href: '/blog/', label: 'Writing' },
+	{ href: '/projects/', label: 'Projects' },
+	{ href: '/about/', label: 'About' },
+	{ href: '/contact/', label: 'Contact' },
+];
+const path = Astro.url.pathname;
+const isActive = (href: string) => path === href || path.startsWith(href) || (href === '/blog/' && path.startsWith('/category/'));
+---
+
+<header class="site-header">
+	<div class="container bar">
+		<a href="/" class="brand" id="nav-home" aria-label={`${SITE.title} — home`}>
+			<span class="mark" aria-hidden="true">S</span>
+			<span class="name">{SITE.title}</span>
+		</a>
+		<nav aria-label="Main">
+			<ul>
+				{
+					nav.map((item) => (
+						<li>
+							<a
+								href={item.href}
+								id={`nav-${item.label.toLowerCase()}`}
+								aria-current={isActive(item.href) ? 'page' : undefined}
+							>
+								{item.label}
+							</a>
+						</li>
+					))
+				}
+			</ul>
+			<button id="theme-toggle" class="theme" type="button" aria-label="Toggle dark mode">
+				<svg class="sun" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+					<circle cx="12" cy="12" r="4"></circle>
+					<path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+				</svg>
+				<svg class="moon" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+					<path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z"></path>
+				</svg>
+			</button>
+		</nav>
+	</div>
+</header>
+
+<script>
+	const btn = document.getElementById('theme-toggle');
+	btn?.addEventListener('click', () => {
+		const root = document.documentElement;
+		const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+		root.dataset.theme = next;
+		localStorage.setItem('theme', next);
+	});
+</script>
+
+<style>
+	.site-header {
+		position: sticky;
+		top: 0;
+		z-index: 5;
+		background: color-mix(in hsl, var(--bg) 82%, transparent);
+		backdrop-filter: saturate(1.4) blur(12px);
+		-webkit-backdrop-filter: saturate(1.4) blur(12px);
+		border-bottom: 1px solid color-mix(in hsl, var(--border) 70%, transparent);
+	}
+	.bar {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		height: 4rem;
+	}
+	.brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		text-decoration: none;
+		font-weight: 600;
+		letter-spacing: -0.01em;
+	}
+	.mark {
+		display: grid;
+		place-items: center;
+		width: 1.9rem;
+		height: 1.9rem;
+		border-radius: 8px;
+		background: var(--text);
+		color: var(--bg);
+		font-family: var(--font-serif);
+		font-size: 1.15rem;
+		font-weight: 500;
+		transition: transform 0.35s var(--ease), background-color 0.2s;
+	}
+	.brand:hover {
+		color: var(--text);
+	}
+	.brand:hover .mark {
+		transform: rotate(-8deg);
+		background: var(--accent);
+	}
+	nav {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
+	}
+	ul {
+		display: flex;
+		gap: 0.15rem;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	ul a {
+		display: block;
+		padding: 0.4rem 0.7rem;
+		border-radius: 7px;
+		font-size: 0.9rem;
+		color: var(--muted);
+		text-decoration: none;
+		transition: color 0.2s, background-color 0.2s;
+	}
+	ul a:hover {
+		color: var(--text);
+		background: var(--surface);
+	}
+	ul a[aria-current='page'] {
+		color: var(--text);
+	}
+	.theme {
+		display: grid;
+		place-items: center;
+		width: 2.1rem;
+		height: 2.1rem;
+		margin-left: 0.35rem;
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		background: transparent;
+		color: var(--muted);
+		cursor: pointer;
+		transition: color 0.2s, background-color 0.2s, transform 0.3s var(--ease);
+	}
+	.theme:hover {
+		color: var(--text);
+		background: var(--surface);
+	}
+	.theme:active {
+		transform: scale(0.92);
+	}
+	.moon {
+		display: none;
+	}
+	:global([data-theme='dark']) .sun {
+		display: none;
+	}
+	:global([data-theme='dark']) .moon {
+		display: block;
+	}
+
+	@media (max-width: 640px) {
+		.name {
+			display: none;
+		}
+		ul a {
+			padding: 0.4rem 0.5rem;
+			font-size: 0.85rem;
+		}
+	}
+	@media (max-width: 380px) {
+		ul a {
+			padding: 0.4rem 0.35rem;
+			font-size: 0.8rem;
+		}
+	}
+</style>
